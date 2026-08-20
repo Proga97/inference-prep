@@ -1,0 +1,18 @@
+# progress exports from the tracker
+inference-tracker-progress*.json
+
+# the served copy is index.html; this is a byte-identical duplicate
+inference-tracker.html
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
