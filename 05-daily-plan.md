@@ -314,6 +314,54 @@ Generated from the same source as `inference-tracker.html`, so the two never dri
 **Sun Dec 13** *(2h)* — *Study (1h):* Question bank section A — answer out loud, score yourself, queue anything under 3 · *Plan (45m):* Review the whole run · write down what you learned · graduate 🎓 · *Small thing (15m):* Check that your GitHub repos have licences and a sensible default branch name
 
 
+## Phase 5 · Close the offer
+
+
+### Week 17 · Dec 14 → Dec 20
+
+**Mon Dec 14** *(5h 45m)* — *Study (1h):* Question bank section B (KV cache) — redo every calculation on paper · *Career (2h):* Interview day / prep for what's on the calendar — the loop is the job now · *Career (1h):* Apply to January-start reqs — they post now and decide in January · *Code (45m):* Revise: linked lists — reverse, detect cycle, merge k · *Design (45m):* Rehearse the design scenario your next loop is most likely to ask · *Small thing (15m):* Update the tracker with any application you sent and forgot to log
+
+**Tue Dec 15** *(6h 15m)* — *Career (2h):* Interviews · same-day thank-you notes naming something specific they said · *Drill (1h 30m):* Drill whatever the last loop exposed — within 24 hours, while it stings · *Design (45m):* Variant: multi-tenant isolation — MIG vs shared engine with quotas, and how noisy neighbours show up in metrics · *Code (45m):* Revise: 1-D DP — climbing, house robber, coin change · *Career (1h):* 5 applications · nudge every silent thread · *Small thing (15m):* Reply to the oldest unanswered message in your inbox, whatever it is
+
+**Wed Dec 16** *(6h 30m)* — *Career (2h):* Interviews · follow-ups · *Career (1h 30m):* Negotiation prep: know your number, your floor, and the market band for new-grad inference roles · *Design (45m):* Variant: disaggregated prefill and decode — what moves between pools, how big is it, over what link? · *Code (45m):* Revise: 2-D DP — grid paths, edit distance, LCS · *Drill (1h 30m):* Project walkthroughs, cold, both rebuilds
+
+**Thu Dec 17** *(5h 45m)* — *Study (1h):* Question bank section C (batching and scheduling) — out loud, timed · *Career (2h):* Interviews · follow-ups · *Career (1h):* Ask every live company for a decision timeline — you need them comparable, not sequential · *Code (45m):* Revise: greedy — scheduling and jump game · *Design (45m):* One design drill, timed · *Small thing (15m):* Back up your progress: Export from the tracker, and commit the repo
+
+**Fri Dec 18** *(4h)* — *Study (1h):* Question bank section D (quantisation) — answer from YOUR measured numbers · *Outreach (1h):* Outreach ×10 — last push before the holiday freeze · *Career (1h):* Chase every application older than two weeks with a short, specific nudge · *Write-up (45m):* Write up the year: what you built, in one post · *Small thing (15m):* Fix the resume: graduation date → December 2026
+
+**Sat Dec 19** *(4h)* — *Career (1h 30m):* Tidy the pipeline: every row in the tracker has a status and a next action with a date · *Drill (1h 30m):* Weak-spot drill of your choosing · *Design (45m):* Variant: serving 100 LoRA adapters on one base model — adapter cache, routing, eviction storms · *Small thing (15m):* Rename the resume file to Pranay_Chimmani_Inference_Engineer.pdf — recruiters see the filename
+
+**Sun Dec 20** *(1h 45m)* — *Self-test (45m):* Self-test: 10 questions, scored — where are you actually? · *Plan (45m):* Plan the quiet week honestly: what gets done, what gets rested · *Small thing (15m):* Check your resume PDF has selectable text, not an image — copy-paste it into a text editor and see what an ATS sees
+
+
+### Week 18 · Dec 21 → Dec 27
+
+**Mon Dec 21** *(4h 15m)* — *Career (1h):* Any live interviews · otherwise: rest. Hiring is frozen this week and pushing does nothing · *Drill (1h 30m):* Light drill — keep the edge, don't grind · *Design (45m):* Variant: a spot-instance batch pipeline — checkpointing, idempotency, what happens on preemption · *Code (45m):* Revise: strings — anagrams, palindromes, tokenising · *Small thing (15m):* Save a plain-text version of the resume for ATS forms that mangle PDFs
+
+**Tue Dec 22** *(3h 45m)* — *Career (1h):* Follow-ups only · keep threads warm with something useful, not a check-in · *Study (1h):* Read something in the field you actually want to read · *Design (45m):* Variant: design the benchmark harness you would trust before signing off a model swap · *Code (45m):* Revise: prefix sums and counting · *Small thing (15m):* Turn on LinkedIn 'Open to work', recruiters-only — set the titles to inference / ML infra, not 'software engineer'
+
+**Wed Dec 23** *(3h 45m)* — *Small thing (15m):* Back up everything: export tracker progress, push all repos · *Study (1h):* Rest or read. Your choice, no guilt either way · *Design (45m):* Rebuild from memory: Scenario 1 (70B, sub-200ms TTFT) — no notes, 35 minutes · *Code (45m):* Revise: matrix — rotate, spiral, search a sorted matrix · *Career (1h):* Applications ×4 · check which of your applications went cold and why; adjust the targeting
+
+**Thu Dec 24** *(4h 30m)* — *Study (1h):* Question bank section E (speculative decoding) — including the exactness argument · *Plan (45m):* Off. · *Design (45m):* Rebuild from memory: Scenario 2 (autoscaling) — no notes, 35 minutes · *Code (45m):* Revise: backtracking — subsets, permutations, word search · *Career (1h):* Applications ×3 · rehearse the 'why inference, why now' answer until it is 60 seconds and true · *Small thing (15m):* Add the inference keywords to your LinkedIn Skills section — that is what recruiter search actually queries
+
+**Fri Dec 25** *(3h 30m)* — *Study (1h):* Question bank section F (parallelism) — size three deployments live · *Plan (45m):* Off. · *Design (45m):* Rebuild from memory: Scenario 4 (multi-LoRA) — no notes, 35 minutes · *Code (45m):* Revise: design questions — LRU, min-stack, hit counter · *Small thing (15m):* Verify your GitHub commit email so your contributions actually show on your profile
+
+**Sat Dec 26** *(3h)* — *Study (1h):* Optional: one paper you've been meaning to read · *Design (45m):* Rebuild from memory: Scenario 5 (offline batch) — no notes, 35 minutes · *Career (1h):* Applications ×4 · update the README of whichever project you touched most recently · *Small thing (15m):* Add a photo and your real name to GitHub — an anonymous profile reads as a throwaway
+
+**Sun Dec 27** *(2h 30m)* — *Study (50m):* Question bank section G (production debugging) — the hypothesis ladders · *Plan (50m):* Plan the January restart: reqs reopen, recruiters return, decisions land the first two weeks · *Career (50m):* Draft the January outreach batch now so it sends on the 2nd
+
+
+### Week 19 · Dec 28 → Dec 31
+
+**Mon Dec 28** *(4h 15m)* — *Career (1h):* Applications restart: 5 today — January hiring cycles open before people return · *Drill (1h 30m):* Back to drilling: sections you scored lowest on · *Design (45m):* Design drill — rebuild your strongest scenario from memory · *Code (45m):* Revise: custom comparators and sort-based problems · *Small thing (15m):* Write a GitHub profile README: one paragraph on what you build, links to the projects
+
+**Tue Dec 29** *(4h 15m)* — *Career (1h):* 5 applications · re-engage every company that went quiet in December · *Drill (1h 30m):* Drill · question bank, out loud · *Design (45m):* Design drill · *Code (45m):* Revise: your two weakest patterns, from the log · *Small thing (15m):* Check the phone number on your resume can receive US calls, and that voicemail is set up and professional
+
+**Wed Dec 30** *(4h 15m)* — *Career (1h):* 5 applications · confirm January interview slots · *Drill (1h 30m):* Drill · project walkthroughs · *Design (45m):* Rebuild from memory: Scenario 6 (RAG serving) — no notes, 35 minutes · *Code (45m):* Revise: arrays + hashmap — 2 timed mediums · *Small thing (15m):* Update the resume with anything shipped in December
+
+**Thu Dec 31** *(5h 45m)* — *Study (1h):* Skim the vLLM release notes since your version — what changed, and why would it change your benchmarks? · *Plan (1h):* Honest review: where is the pipeline, what worked, what didn't · *Design (45m):* Explain your own cluster as a design interview — requirements, maths, architecture, trade-offs, 20 minutes · *Code (45m):* Revise: two pointers / sliding window — 2 timed · *Career (1h):* Applications ×4 · two referral messages · thank anyone who replied this week · *Plan (1h):* Set the January target with dates — offer or no offer, the work continues on the 2nd · *Small thing (15m):* Make your email signature: name, one-line title, LinkedIn, GitHub. Every outreach message carries it
+
+
 ---
 
 ## Tracking
