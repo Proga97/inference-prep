@@ -1,6 +1,6 @@
 # System Design Playbook — LLM Serving Interviews
 
-Six worked scenarios covering ~90% of what serving/platform loops ask. Each follows the same five-step method — internalize the METHOD; the scenarios are reps.
+Eleven worked scenarios covering what serving/platform loops ask. Scenarios 1–6 are the classics; 7–11 are the 2026 ones — MoE, reasoning models, million-token context, constrained decoding at scale, and mixed-regime platforms. Each follows the same five-step method — internalize the METHOD; the scenarios are reps.
 
 **The method (35–40 min round):**
 1. **Requirements (5 min):** traffic (req/s, prompt/output length distributions), SLOs (TTFT, ITL, availability), model(s), budget posture, growth. Interviewers grade the questions you ask.
@@ -15,7 +15,7 @@ Six worked scenarios covering ~90% of what serving/platform loops ask. Each foll
 
 **Requirements to extract:** prompt length distribution (say median 1k, p99 8k), output ~300 tokens, streaming OK, TTFT 200ms p95, ITL ~40ms.
 
-**Capacity math:** 70B fp16 = 140 GB → TP=4 on H100s per replica (320 GB: weights + KV headroom). Prefill of 1k tokens on 4×H100 ≈ tens of ms — fine; the 200ms budget is really a QUEUEING budget. Each replica sustains some X req/s (state you'd measure with a benchmark harness — e.g., ~50 req/s at these lengths); 1,000 req/s → ~20–25 replicas ≈ 100 H100s, then add 20% headroom.
+**Capacity math:** 70B fp16 = 140 GB → TP=4 on H100s per replica (320 GB: weights + KV headroom). Prefill of 1k tokens on 4×H100 ≈ tens of ms — fine; the 200ms budget is really a QUEUEING budget. Sanity-check any per-replica number against prefill FLOPs before you say it: at fp16, 1k-token prompts cost 2×70e9×1000 ≈ 140 TFLOPs each, and 4×H100 peak ≈ 4 PFLOPS — so ~10–15 req/s per replica is the honest fp16 figure, which puts 1,000 req/s at 300+ H100s. Getting to ~100 H100s requires saying the assumptions out loud: FP8 (≈2× compute, halved weights) plus a real prefix-cache hit rate on the shared system prompt. An interviewer who does this arithmetic is checking whether you do it too.
 
 **Architecture:** gateway (auth, rate limits, admission) → router (least-KV-load + prefix affinity) → TP=4 vLLM replicas with continuous batching + chunked prefill + prefix caching → SSE streaming back. FP8 quantization halves the footprint and roughly doubles per-replica throughput — say this early, it changes the math.
 
@@ -82,6 +82,74 @@ What's graded: structure, instrument-first instinct, and inference-specific hypo
 
 ---
 
+## Scenario 7 — "Serve a DeepSeek-V3-class MoE model"
+
+**The reframe that earns the round:** total params set memory, active params set compute. ~671B total / ~37B active means you need the memory of a giant and the FLOPs of a mid-size model — and every intuition from dense serving needs re-deriving.
+
+**Capacity math:** FP8 weights ≈ 671 GB. An 80 GB H100 gives ~70 GB usable → 10–12 GPUs minimum for weights alone, realistically 16+ with KV and headroom. That's two NVLink-connected nodes with InfiniBand between them. Note out loud that those GPUs are memory-holders more than FLOP-providers — which is what drives the rest of the design.
+
+**Architecture:** expert parallelism as the primary axis (all-to-all dispatch and combine replacing TP's allreduce), plus TP within the attention layers. Then disaggregate: prefill routes many tokens through every expert and is compute-bound; decode routes one token per sequence and is all-to-all-bound. They want different EP widths and batch shapes, so give them separate pools.
+
+**Deep-dive bait:** expert load imbalance — routing is learned, not uniform, so hot experts stall the all-to-all barrier and set your step time; fix with redundant hot-expert replicas and periodic re-placement from observed routing stats. Also: why large batch is *mandatory* here (expert utilisation), and why that fights your latency SLO.
+
+**Failure modes:** one slow GPU stalls every step (all-to-all is a barrier); routing distribution shift after a model update invalidates your placement; capacity-factor overflow silently dropping tokens.
+**Metrics:** per-expert token counts, all-to-all time as a fraction of step time, EP imbalance ratio, tokens/sec/GPU.
+
+---
+
+## Scenario 8 — "Serve a reasoning model, p50 8k output tokens"
+
+**Everything from Scenario 1 inverts.** Say that first, then show it.
+
+**Capacity math:** at 300 output tokens the fleet is prefill-heavy; at 8k it is overwhelmingly decode-bound. Redo the arithmetic: decode time now dominates total latency, so ITL is the SLO that matters and TTFT becomes almost irrelevant. KV grows throughout a single request — a sequence cheap at admission is expensive 20k tokens later, which breaks admission control that only looks at prompt length.
+
+**Design consequences:** (1) preemption becomes very costly — recomputing a 20k-token prefix is enormous, so swap-to-CPU starts beating recompute, and you need to bias the scheduler against preempting deep sequences; (2) prefix caching loses value *per token* because the shared prefix is a shrinking fraction of the total; (3) speculative decoding gets MORE attractive — long low-entropy reasoning chains give high acceptance rates; (4) admission control must predict or bound output length, or long sequences starve short ones.
+
+**Product lever worth naming:** reasoning-effort / thinking-budget controls. Cost per request is now mostly a product decision, not an infrastructure one.
+**Metrics:** ITL p99 above all, KV growth rate per sequence, preemption depth distribution, tokens generated per dollar.
+
+---
+
+## Scenario 9 — "1M-context code assistant"
+
+**Capacity math first, because it's brutal.** KV at 1M tokens on a GQA 8B: 128 KB/token × 1M ≈ 128 GB for ONE sequence. That doesn't fit an H100. So the honest opening is "single-GPU is off the table; here's what I'd actually do."
+
+**Levers, ranked:** context parallelism to shard the sequence across GPUs for prefill; KV quantisation to fp8 (halves it immediately); architectural help if you get to choose the model — sliding-window or hybrid attention, attention sinks, MLA-style latent KV; KV eviction (H2O/SnapKV-style) accepting quality loss on evicted spans; and aggressive prefix caching, since a code assistant re-sends nearly the same repo context every turn.
+
+**The insight to volunteer:** for this workload, cache hit rate is the whole ballgame. The user's context barely changes between turns — if you route them to the pod holding their KV and never evict it mid-session, you turn a 1M-token prefill into a few thousand new tokens. Session affinity stops being an optimisation and becomes the architecture.
+
+**Failure modes:** one long session pinning an entire GPU's memory; eviction mid-session forcing a catastrophic re-prefill; prefill of a cold 1M context blocking every other request (chunked prefill mandatory).
+
+---
+
+## Scenario 10 — "100% valid JSON at 500 req/s"
+
+**Requirements to extract:** how complex is the schema (flat vs deeply nested), is it fixed or per-request, and what's the latency budget. A fixed flat schema and a per-request nested one are different systems.
+
+**Mechanism:** compile the schema to an FSM (pushdown automaton if nested) over the vocabulary, mask logits each step so only valid tokens survive. Precompute and cache the compiled masks — compilation per request at 500 req/s is a non-starter, so key the cache by schema hash.
+
+**Where the cost lands:** mask application is CPU work per request per step. At high batch this can become the decode bottleneck while the GPU sits idle — the interesting half of the answer. Mitigations: overlap masking with GPU compute, batch mask application, and pre-warm the compile cache for known schemas.
+
+**Interactions (this is what separates the answer):** constrained decoding vs speculative decoding — naive drafting craters acceptance because draft tokens violate the grammar; the fix is applying the same mask to the draft (grammar-aligned drafting), which production stacks do; vs prefix caching — fine, they're orthogonal; vs batching — requests with different grammars can't share mask work. Also tokenizer boundaries: a valid JSON *string* isn't always a valid *token sequence*, which is where naive implementations produce invalid output.
+
+**Metrics:** schema-validity rate (should be 100% — if not, your FSM is wrong), mask time as a fraction of step time, compile-cache hit rate.
+
+---
+
+## Scenario 11 — "One platform serving LLMs, embeddings and rerankers"
+
+**The point of this question:** three completely different regimes on one fleet and one on-call rota. Name the differences before designing anything.
+
+**The regimes:** LLMs are autoregressive, KV-cached, latency measured in TTFT/ITL. Embeddings are single-forward-pass, no KV cache at all, throughput-bound — and under *naive* padded batching, dominated by padding waste; the fix is length bucketing or varlen/packed attention, and naming both marks you as someone who has actually run one. Rerankers are cross-encoders: one forward pass per (query, document) pair, so latency scales with candidate count and the budget is usually tens of milliseconds inside a RAG request.
+
+**Architecture:** don't force one engine to do all three. Separate pools with a shared gateway, shared auth, shared metrics, shared deploy pipeline. Bin-pack the small embedding and reranker models onto fewer GPUs (they're tiny); give LLMs dedicated cards. One control plane, three data planes.
+
+**Deep-dive bait:** why length bucketing matters so much for embeddings (padding waste is the dominant inefficiency); why reranker latency budgets force you to cap candidate count; and how a RAG request's total budget gets divided across retrieval, rerank and generation.
+
+**Metrics per regime:** LLM — TTFT/ITL/goodput. Embeddings — sequences/sec and padding efficiency. Reranker — p99 for a fixed candidate count.
+
+---
+
 ## Rapid-fire variants (one-paragraph answers to prepare)
 
 - **Multi-region serving:** route by geo + data residency; weights replicated per region; no cross-region KV (latency kills it) — sessions pin to a region; global anycast gateway; per-region autoscaling with cross-region spill only for full outage.
@@ -93,4 +161,4 @@ What's graded: structure, instrument-first instinct, and inference-specific hypo
 
 ## Whiteboard drill schedule
 
-One scenario per sitting, 35 minutes, actually drawing and talking. Weeks 12–16: cycle all six twice, then have someone (or a recording of yourself) play interruption-heavy interviewer — the skill under pressure is returning to the method's spine after each tangent.
+One scenario per sitting, 35 minutes, actually drawing and talking. Cycle scenarios 1–6 until fluent, then 7–11 — and cap any one scenario at ~4 passes; past that you're memorising the scenario, not the method. Then have someone (or a recording of yourself) play interruption-heavy interviewer — the skill under pressure is returning to the method's spine after each tangent.

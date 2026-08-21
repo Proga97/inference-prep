@@ -171,9 +171,29 @@ How to use each module: read/watch the primary source → do the exercises (non-
 
 **Practice set (build each in <45 min, clean, tested):** LRU cache from scratch (dict + doubly-linked list — also *explains KV eviction*); token-bucket and sliding-window rate limiter; bounded producer/consumer with asyncio; a request batcher that flushes on max-size OR max-wait (this is literally dynamic batching); SSE streaming endpoint (FastAPI); consistent-hash ring with virtual nodes (literally your Phase-3 router); heap-based scheduler; top-k frequent items; interval merging.
 
-**Plus:** 3 LeetCode mediums/week (hashmap, heap, two-pointer, BFS/DFS families) to keep the classic round safe.
+**No LeetCode curriculum.** You have ~300 problems behind you; grinding patterns buys less than building the things these loops actually ask about. Two timed builds a week (Mon, Wed) from the twenty-exercise practical list, each of which is also a component of one of your projects. If a company confirms a classic algorithms screen, spend two evenings on it then — targeted, not speculative.
 
 **You're done when:** never — this stays weekly through December. But you're interview-safe when you can do any of the practice set cold while talking.
+
+---
+
+## Module 11 — Production toolchain (Weeks 6, 8–9)
+
+**Why interviewers care:** platform roles hire people who have *run* things. Theory about bottlenecks loses to "I profiled it and found X." This module is the difference between a candidate who has read about serving and one who has operated it.
+
+**Profiling.** `torch.profiler` with a short trace window (never the whole run — you'll drown), `py-spy top` / `py-spy record` attached to the live server, and one Nsight Systems trace to see the timeline properly. The question to answer with data: in a single decode step, how much is GPU compute and how much is Python and scheduling overhead? Keep a flame graph for the README.
+
+**Engine comparison.** Run the same model, same prompts, same arrival trace through vLLM, TensorRT-LLM and SGLang. Record throughput, TTFT, memory, build/deploy friction. TensorRT-LLM's build-time compilation is the whole trade-off — upfront cost for speed, at the price of runtime flexibility; use the NGC container rather than building from source. SGLang gives you RadixAttention to compare against the prefix cache you wrote yourself. Be honest when an engine doesn't win on your hardware: knowing *when* each one wins is the actual interview answer, and most candidates have used exactly one.
+
+**Observability.** Prometheus scraping vLLM's `/metrics` and your own, Grafana on top. Build one dashboard you'd genuinely want at 3am: TTFT percentiles, ITL, throughput, KV utilisation, queue depth, preemptions, cache hit rate. Add two alerts and be able to justify both thresholds.
+
+**Multi-GPU, actually run.** A few hours on rented 2×A100 or 2×L40S — the cost of lunch. Prepare every script before the clock starts. Run `--tensor-parallel-size 2`, measure scaling efficiency against one GPU, and note the gap: that gap is allreduce, and it's what gets probed. Then show TP *costing* you latency on a model that fits on one card — the more interesting result.
+
+**Managed serving.** Deploy behind Ray Serve or KServe and compare it honestly to the gateway you built. You will be asked "why did you build your own instead of using X," and this is where you earn a good answer rather than a defensive one.
+
+**Cold starts.** Measure it in three parts — image pull, weight load, first token — then attack each: baked weights vs volume vs streamed from object storage, layer ordering, smaller base image. Cold start is *the* production question for serving platforms.
+
+**You're done when:** you can answer "how would you find the bottleneck" with tools and a story from your own system, name which engine you'd pick for a given workload and why, and quote your own TP scaling number.
 
 ---
 

@@ -1,6 +1,8 @@
 # Inference Engineer Roadmap — Aug 20 → Dec 13, 2026
 
-Prepared for Pranay Chimmani. Goal: clear inference engineer (serving/platform track) interviews and have a role lined up by December graduation.
+Prepared for Pranay Chimmani. Goal: **an offer in hand by December 1** (serving/platform track).
+
+**The Dec 1 calendar, counted backwards — this governs everything:** an offer by Dec 1 means final decisions by ~Nov 21, because Thanksgiving week (Nov 23–29) freezes hiring for ten days. Onsites therefore happen Oct 27 – Nov 14. A loop takes 4–6 weeks end to end, so **loops must START by mid-October**, which means screens in late September, which means the September application-and-referral push is the single most decisive fortnight of the plan. Everything before Sep 4 exists to make that push land with a defensible resume. December is overtime and January is the second window — planned, not feared — but the aim point is Dec 1.
 
 **This is the strategy.** The rest of the kit — and the interactive tracker — sit beside it: `01-study-guide.md` (what to learn, from which sources, with exercises), `02-question-bank.md` (40 questions with worked answers), `03-system-design-playbook.md` (6 worked design scenarios), `04-project-specs.md` (detailed specs for the four portfolio builds), `05-daily-plan.md` (day-by-day tasks, Aug 20 → Dec 13 — heavy Mon–Thu, lighter Fri–Sun).
 
@@ -29,7 +31,7 @@ Prepared for Pranay Chimmani. Goal: clear inference engineer (serving/platform t
 From current job postings (NVIDIA new-grad AI Inference Performance Engineer, Together AI, Fireworks, Baseten) and interview guides, the loop for serving/platform roles is consistently four pillars:
 
 ### Pillar 1 — Practical coding (Python)
-Not LeetCode-hard. Baseten-style loops use "practical engineering work instead of LeetCode trivia": rate limiters, request queues, LRU caches, token buckets, producer-consumer with asyncio, streaming parsers. Fireworks adds one traditional medium-hard algorithms round. You need clean, fast Python with good structure under time pressure.
+Not algorithm-trivia. Baseten-style loops use "practical engineering work instead of LeetCode trivia": rate limiters, request queues, LRU caches, token buckets, producer-consumer with asyncio, streaming parsers. Fireworks adds one traditional medium-hard algorithms round, and big-tech loops (AWS, Databricks, Google-class) impose 1–2 classic DS&A rounds regardless of team. Be honest with yourself about that tier: two evenings will not de-rust 300 problems from a year ago to a Databricks bar. If a big-tech loop gets scheduled, start maintenance reps 2–3 weeks before it, not the night before — and if you skip that tier entirely, skip the reps guilt-free. You need clean, fast Python with good structure under time pressure, explained out loud while you type.
 
 ### Pillar 2 — Inference domain knowledge (the deep-dive round)
 The canonical question set: prefill vs decode (compute-bound vs memory-bound — interviewers call distinguishing these "the fastest way to show you understand the domain"), KV cache memory math, PagedAttention and fragmentation, continuous batching vs static, speculative decoding and why it's mathematically exact, quantization trade-offs (INT8/INT4/FP8, GPTQ vs AWQ, activation outliers), sampling parameters, GQA/MQA, prefix caching, disaggregated prefill/decode.
@@ -50,28 +52,29 @@ Today is Thu Aug 20, and the plan starts today. Applications start **now**, not 
 
 | Phase | Weeks | Dates | What ships |
 |---|---|---|---|
-| Kickoff | — | **Aug 20–23** | Resume date fixed, tracker built, first applications out, environment + llama.cpp running |
-| **1 · Fundamentals + Qwen-VL fix** | 1 | Aug 24–30 | KV cache built by hand, vLLM hands-on, `inference-from-scratch` and `quantization-tradeoffs` published → **Qwen-VL bullet rewritten Aug 30** |
-| **2 · Resume rebuild** | 2–3 | Aug 31 – Sep 13 | `distributed-kv-cache` core rebuilt solo → **resume v2 on Fri Sep 4**; week 3 hardens it (HPA, chaos, Terraform) while the resume is already out |
-| **3 · Serving stack + OSS** | 4–9 | Sep 14 – Oct 25 | `mini-vllm` published (continuous batching, paged blocks, preemption, metrics), spec-decode and quantization depth, vLLM/SGLang PRs, portfolio polish |
-| **4 · Interview mode** | 10–16 | Oct 26 – Dec 13 | Four mocks, all six design scenarios drilled, question bank fluent, offers |
+| Kickoff | — | Aug 20–23 | Environment + llama.cpp running, job tracker live, SDE applications out, learning spine started |
+| **1 · Fundamentals + Qwen-VL fix** | 1 | Aug 24–30 | Resume Day (Aug 24) · KV cache built by hand · vLLM hands-on · `inference-from-scratch` and `quantization-tradeoffs` published → **Qwen-VL bullet rewritten Aug 30** |
+| **2 · Resume rebuild** | 2–3 | Aug 31 – Sep 13 | `distributed-kv-cache` core rebuilt solo → **resume v2 Fri Sep 4**; week 3 hardens it. Breadth passes + **first mock Sep 12** |
+| **3 · Serving stack + toolchain** | 4–9 | Sep 14 – Oct 25 | `mini-vllm` published · MoE, structured decoding, multimodal · profiling · three-engine comparison · real multi-GPU · Prometheus/Grafana · Ray Serve · cold starts · OSS PRs |
+| **4 · Interview mode** | 10–16 | Oct 26 – Dec 13 | Drills, design scenarios, mocks 4–7, live loops |
+| **5 · Close the offer** | 17–19 | Dec 14–31 | Interviews, follow-ups, negotiation, holiday-aware push and restart |
+
+**Mocks run Sep 12, Sep 19, Oct 3, Oct 17, Oct 28, Nov 4, Nov 11, Nov 18** — deliberately early, because applications go out from day one and screens land in September. The most common way this plan could fail is doing all the reps after your best companies have already interviewed you.
 
 ### Why the resume work comes first — and how Sep 4 is possible
 
 Your two weakest bullets are the two an inference interviewer will drill hardest, so they get fixed before anything else, in the order of how cheaply each can be made honest.
 
-The **Qwen-VL bullet is four days of mechanical work**: build llama.cpp, quantize a checkpoint four ways, benchmark speed/memory/quality, write it up. No real prerequisites, so it runs in week 1's lighter slots alongside the fundamentals and is done **Aug 30**.
+The **Qwen-VL bullet is four days of mechanical work** — build llama.cpp, quantize four ways, benchmark speed/memory/quality, write it up. No prerequisites, so it runs in week 1's lighter slots and is done **Aug 30**.
 
-The **KV cache cluster gets a hard two-week deadline** by scoping v1 to what the bullet actually claims: prefix-affinity routing over a consistent-hash ring, per-worker KV budget with LRU eviction, an SSE gateway, and the affinity-on-vs-off benchmark. That is the claim — and it's mostly distributed-systems work, your home turf. HPA autoscaling, chaos testing, Terraform and the optional GKE run are **week 3**, hardening a project whose numbers are already published; if hardening improves the numbers, the bullet gets upgraded that Thursday.
+The **KV cache cluster gets a hard two-week deadline** by scoping v1 to what the bullet actually claims: prefix-affinity routing over a consistent-hash ring, per-worker KV budget with LRU eviction, an SSE gateway, and the affinity-on-vs-off benchmark. HPA, chaos testing and Terraform are week 3 — hardening a project whose numbers are already published.
 
-It needs exactly one week of foundation: the KV cache built by hand (Wed Aug 26) and vLLM's prefix caching measured with your own eyes (Thu Aug 27) — that second experiment is the very effect the cluster's routing exploits. Compressing further would mean building a prefix-affinity router without understanding what it routes around, which is what an interviewer catches on the first follow-up.
-
-**Resume v2 ships Fri Sep 4** — sixteen days from now — and everything after it (mini-vLLM, open source, seven weeks of drilling) happens on top of a resume you can defend line by line.
+Attribution matters as much as the work: the team project stays in Experience with an honest scoped bullet; the solo rebuild goes in Projects with the hardware stated inline. Volunteered, it's a strength. Extracted under questioning, it's a disqualifier.
 
 ### Ongoing tracks, every week from now to December
 
 - **Applications: 12–15/week from day one.** Track in a sheet. Referrals > cold applies — message Purdue alumni at target companies. On Sep 4, re-engage everyone you've already applied to with resume v2 and repo links.
-- **Coding practice: 4–5 problems/week.** Alternate timed LeetCode mediums with the practical builds these loops actually use — LRU cache, rate limiter, dynamic batcher, consistent-hash ring, SSE endpoint. All Python, all timed.
+- **Coding practice: two timed builds a week, Mon and Wed.** No LeetCode. Twenty ML-systems exercises — byte-budget LRU cache, token bucket, dynamic batcher, consistent-hash ring, SSE with cancellation, admission controller, incremental detokeniser — each of which is also a component of one of your projects.
 - **Revision queue.** Everything you fumble goes in it (↻ in the tracker) and comes back at 2 / 7 / 21 days. Three clean passes = mastered.
 - **Write-ups.** Every project gets a README with benchmark graphs. Recruiters and interviewers actually read these; they're the difference between claims and evidence.
 
