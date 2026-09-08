@@ -4,9 +4,13 @@ These four projects ARE the preparation. Reading produces recognition; building 
 
 Rules that apply to all four: public GitHub repo; README written like an engineering blog post (problem → design → benchmark graphs → what surprised you); commit as you go (a real history reads as real work); every number in the README reproducible by a script in the repo.
 
+**Detailed walkthroughs.** Each project has a companion document with every milestone worked step by step — concepts from zero, the real code to read first, fully commented code, tests, expected numbers, and failure tables: `06-p1-walkthrough.md` (Project 1), `07-p2-walkthrough.md` (Project 2), `08-p3-walkthrough.md` (Project 3), `09-p4-walkthrough.md` (Project 4). The study-guide exercises are worked the same way in `10-study-walkthroughs.md`. This file stays the spec — the *what* and the acceptance bar; the walkthroughs are the *how*.
+
 ---
 
 ## Project 1 — `inference-from-scratch` (Week 1 · Aug 24–30)
+
+> **Walkthrough:** `06-p1-walkthrough.md` — Step 0 housekeeping, M1 model + parity, M2 naive loop, M3 KV cache, M4 sampling, M5 bench.py.
 
 **One-liner:** a plain-PyTorch LLM inference engine, built up from a naive generation loop to a KV-cached, batched, sampled engine — with measurements at every step.
 
@@ -25,6 +29,8 @@ Rules that apply to all four: public GitHub repo; README written like an enginee
 
 ## Project 2 — `mini-vllm` (Weeks 4–6 · Sep 14 – Oct 4) — built LAST, after both resume fixes
 
+> **Walkthrough:** `07-p2-walkthrough.md` — sizing the 2060, the interface contract with Project 1, M1–M6, design divergences from real vLLM.
+
 **One-liner:** a continuous-batching inference server over the Project-1 engine: paged KV blocks, iteration-level scheduling, SSE streaming, live metrics. ~600–900 lines of Python.
 
 **Milestones:**
@@ -41,6 +47,8 @@ Rules that apply to all four: public GitHub repo; README written like an enginee
 ---
 
 ## Project 3 — `distributed-kv-cache` rebuild (Weeks 2–3 · Aug 31 – Sep 13) — THE BIG RESUME FIX
+
+> **Walkthrough:** `08-p3-walkthrough.md` — kind cluster, llama-server workers, consistent-hash coordinator, SSE gateway, LRU eviction, the affinity-on-vs-off benchmark, KEDA/chaos/GKE.
 
 **One-liner:** solo rebuild of the resume project: a Kubernetes cluster serving LLM inference through a KV-cache-aware routing layer — gateway, coordinator, workers — with consistent-hash prefix routing, LRU eviction, autoscaling, and honest benchmarks.
 
@@ -62,6 +70,8 @@ Rules that apply to all four: public GitHub repo; README written like an enginee
 ---
 
 ## Project 4 — `quantization-tradeoffs` (Week 1 · Aug 24–30, ~4 days) — THE QWEN-VL FIX, done FIRST
+
+> **Walkthrough:** `09-p4-walkthrough.md` — llama.cpp CUDA build, GGUF conversion and K-quants, llama-bench harness, GSM8K/perplexity eval, the tradeoff table and resume bullet.
 
 **One-liner:** llama.cpp quantization sweep of Qwen2-VL (or Qwen2.5 text model) on your own hardware: speed/memory/quality across Q4_K_M / Q5_K_M / Q8_0 / fp16, with a small task-specific eval.
 

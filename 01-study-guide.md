@@ -4,9 +4,13 @@ Companion to `inference-engineer-roadmap.md` (the schedule). This is the *what a
 
 How to use each module: read/watch the primary source → do the exercises (non-negotiable — exercises are where learning happens) → check yourself against "You're done when." Then close it and move on.
 
+**Worked walkthroughs.** Every exercise below is worked step by step — terms defined from zero, the real code to read first, fully commented code, the arithmetic shown, expected results — in `10-study-walkthroughs.md`. Exercises that are satisfied by a project milestone point to the project walkthrough (`06-p1-walkthrough.md`, `07-p2-walkthrough.md`, `08-p3-walkthrough.md`, `09-p4-walkthrough.md`). This file stays the map; that one is the route.
+
 ---
 
 ## Module 1 — Transformer internals (Week 1, Mon–Tue)
+
+> Walkthrough: `10-study-walkthroughs.md` § Module 1 · exercises 1–2 are Project 1 M1–M2 (`06-p1-walkthrough.md`).
 
 **Why interviewers care:** every inference question bottoms out in the forward pass. If you can't sketch what happens between input tokens and logits, nothing downstream makes sense.
 
@@ -26,6 +30,8 @@ How to use each module: read/watch the primary source → do the exercises (non-
 ---
 
 ## Module 2 — Inference arithmetic & the GPU mental model (Week 1)
+
+> Walkthrough: `10-study-walkthroughs.md` § Module 2 — the roofline derivation, the 2060 ceiling, prefill FLOPs, the full model×GPU table.
 
 **Why interviewers care:** "prefill is compute-bound, decode is memory-bound" plus the supporting arithmetic is the #1 domain filter question. Numbers, not vibes.
 
@@ -48,6 +54,8 @@ How to use each module: read/watch the primary source → do the exercises (non-
 
 ## Module 3 — KV cache & attention variants (Week 1, Wed–Thu)
 
+> Walkthrough: `10-study-walkthroughs.md` § Module 3 · exercise 1 is Project 1 M3 (`06-p1-walkthrough.md`).
+
 **Why interviewers care:** KV cache is THE central object of inference engineering. Memory math on it appears in nearly every loop.
 
 **Sources:**
@@ -68,6 +76,8 @@ How to use each module: read/watch the primary source → do the exercises (non-
 ---
 
 ## Module 4 — Serving engines: vLLM & SGLang internals (Week 1 hands-on, Weeks 5–7 deep)
+
+> Walkthrough: `10-study-walkthroughs.md` § Module 4 — serving Qwen2.5-1.5B on the 2060, the concurrency sweep, the prefix-cache TTFT experiment, the vLLM v1 reading path · exercise 3 is Project 2 (`07-p2-walkthrough.md`).
 
 **Why interviewers care:** this is the job. Postings literally name vLLM/SGLang/TensorRT-LLM proficiency.
 
@@ -91,6 +101,8 @@ How to use each module: read/watch the primary source → do the exercises (non-
 
 ## Module 5 — Quantization (Week 1 alongside Project 4, then Week 6)
 
+> Walkthrough: `10-study-walkthroughs.md` § Module 5 · exercise 2 is Project 4 (`09-p4-walkthrough.md`).
+
 **Why interviewers care:** the standard "trade-offs" question — every serving team quantizes something, and wants to know you understand what breaks.
 
 **Sources:**
@@ -111,6 +123,8 @@ How to use each module: read/watch the primary source → do the exercises (non-
 
 ## Module 6 — Speculative decoding (Week 7)
 
+> Walkthrough: `10-study-walkthroughs.md` § Module 6 — a complete toy implementation with the rejection-sampling rule explained, plus the speedup arithmetic worked.
+
 **Why interviewers care:** favorite "do they actually understand it or just name-drop it" topic. The exactness proof and acceptance-rate math are the differentiators.
 
 **Sources:**
@@ -128,6 +142,8 @@ How to use each module: read/watch the primary source → do the exercises (non-
 ---
 
 ## Module 7 — Distributed inference & disaggregation (Weeks 2, 8)
+
+> Walkthrough: `10-study-walkthroughs.md` § Module 7 — the 70B sizing arithmetic and the KV-transfer one-pager with numbers.
 
 **Why interviewers care:** anything ≥70B forces multi-GPU; senior-leaning question territory, and Together's posting names Mooncake explicitly.
 
@@ -148,6 +164,8 @@ How to use each module: read/watch the primary source → do the exercises (non-
 
 ## Module 8 — Production serving ops (Weeks 3–4, then 8 — overlaps the rebuild)
 
+> Walkthrough: `10-study-walkthroughs.md` § Module 8 — concrete SLO numbers with justifications; the TTFT instrumentation plan · exercise 2 is Project 3 M6–M7 (`08-p3-walkthrough.md`).
+
 **Why interviewers care:** this is the Baseten/Modal/Anyscale system-design round: SLOs, autoscaling, debugging, cost.
 
 **Sources:**
@@ -167,6 +185,8 @@ How to use each module: read/watch the primary source → do the exercises (non-
 
 ## Module 9 — Coding fitness (every week)
 
+> Walkthrough: `10-study-walkthroughs.md` § Module 9 — for each practice item: the interface, the data structure, the trap, and the test that defines "done"; the 45-minute routine.
+
 **Format seen in loops:** Python, practical problems > algorithm trivia (Baseten explicitly), plus one classic medium round at some companies (Fireworks).
 
 **Practice set (build each in <45 min, clean, tested):** LRU cache from scratch (dict + doubly-linked list — also *explains KV eviction*); token-bucket and sliding-window rate limiter; bounded producer/consumer with asyncio; a request batcher that flushes on max-size OR max-wait (this is literally dynamic batching); SSE streaming endpoint (FastAPI); consistent-hash ring with virtual nodes (literally your Phase-3 router); heap-based scheduler; top-k frequent items; interval merging.
@@ -178,6 +198,8 @@ How to use each module: read/watch the primary source → do the exercises (non-
 ---
 
 ## Module 11 — Production toolchain (Weeks 6, 8–9)
+
+> Walkthrough: `10-study-walkthroughs.md` § Module 11 — exact profiler commands, the three-engine comparison plan, the Prometheus/Grafana compose with panels and alerts, the 2×GPU rental checklist, the cold-start measurement method.
 
 **Why interviewers care:** platform roles hire people who have *run* things. Theory about bottlenecks loses to "I profiled it and found X." This module is the difference between a candidate who has read about serving and one who has operated it.
 
@@ -198,6 +220,8 @@ How to use each module: read/watch the primary source → do the exercises (non-
 ---
 
 ## Module 10 — Story bank & behavioral (Week 10+, alongside interviews)
+
+> Walkthrough: `10-study-walkthroughs.md` § Module 10 — the STAR template, a worked first-person pivot story, the five-whys drill.
 
 Write STAR stories (half a page each), then compress each to 90 seconds spoken:
 1. Ordermatic — solo-built multi-tenant SaaS: architecture choices, a production incident, what you'd redo.
