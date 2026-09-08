@@ -1,0 +1,1 @@
+Static site: serve files as-is. Without this file GitHub Pages runs every .md through Jekyll/Liquid, which fails on {{ }} in the walkthroughs.
